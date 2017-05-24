@@ -1,6 +1,16 @@
 var Hapi = require('hapi');
 var server = new Hapi.Server();
 
+/*var readline = require('readline');
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});*/
+
+var prompt = require('prompt');
+
+
+
 server.connection({ port: 3000 });
 //console.log(server.listener);
 
@@ -35,27 +45,38 @@ server.register(require('inert'), function(err){
 
 socket.on('io:welcome', function(data, fn){
   console.log(data);
-  fn('sdfsdf');
+  fn('Manager Starting ......');
   socket.emit('io:name', 'DuyCuong');
-  socket.on('newuser', function(msgData, fn){
+  /*socket.on('newuser', function(msgData, fn){
     console.log('#___1');
     console.log(msgData);
-    fn('woot');
-  });
+    //fn('woot');
+  });*/
 });
 
-/*socket.on('chat:people:new', function(msgData){
-  console.log('#___1');
+/*socket.on('newuser', function(msgData){
+  console.log('#_________________________________________________________________________________________________');
 });*/
 
+var userID;
 socket.on('newuser', function(msgData, callback){
     console.log('#_Manager: >>>');
-    console.log(msgData);
-    callback('woot1');
+    //console.log(msgData.userID);
+    userID = msgData.userID;
+    //callback('woot1');
 });
 
+//console.log('userID: ' + userID);
 socket.on('chat:messages:latest', function(msg){
   console.log(msg);
+  console.log('userID: ' + userID);
+  prompt.start();
+  prompt.get(['msg'], function(err, result){
+    console.log('   Msg: ' + result.msg);
+    
+    socket.emit('io:message', {'did':msg.myid, 't': result.msg});  
+
+  });
   //var newMSG = JSON.parse(msg);
   //console.log(typeof(msg));
   //console.log(msg.t);
